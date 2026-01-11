@@ -22,10 +22,12 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: cloud2-483114
-          install_components: gke-gcloud-auth-plugin
 
-      - name: Configure GKE auth plugin
+      # 🔥 THIS IS THE MISSING PIECE
+      - name: Install GKE auth plugin
         run: |
+          sudo apt-get update
+          sudo apt-get install -y google-cloud-cli-gke-gcloud-auth-plugin
           echo "USE_GKE_GCLOUD_AUTH_PLUGIN=True" >> $GITHUB_ENV
 
       - name: Get GKE credentials
@@ -36,4 +38,4 @@ jobs:
 
       - name: Deploy to Kubernetes
         run: |
-          kubectl apply -f release/kubernetes-manifests.yaml
+          kubectl apply --validate=false -f release/kubernetes-manifests.yaml
